@@ -135,7 +135,7 @@
     dns4_ignore_auto: true
     state: present      
   with_items:
-    - "{{ current_connections.stdout_lines }}"
+    - "{{ ansible_interfaces }}"
   when: "'eth' in item"
   become: true
   become_method: sudo
