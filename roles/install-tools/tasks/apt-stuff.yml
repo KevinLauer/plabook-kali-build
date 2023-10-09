@@ -137,5 +137,6 @@
   with_items:
     - "{{ ansible_interfaces }}"
   when: "'eth' in item"
+  ignore_errors: yes
   become: true
   become_method: sudo
