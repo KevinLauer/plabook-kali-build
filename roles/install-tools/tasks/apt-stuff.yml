@@ -118,6 +118,7 @@
 - name: "Configure Network Interface to use dnsmasq"
   community.general.nmcli:
     conn_name: "{{ item }}"
+    type: ethernet
     dns4: 127.0.0.1
     dns4_ignore_auto: true
     state: present      
