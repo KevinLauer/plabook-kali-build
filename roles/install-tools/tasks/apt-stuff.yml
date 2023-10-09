@@ -115,6 +115,18 @@
   become: true
   become_method: sudo
 
+- name: List current connections
+  shell: nmcli -t -f NAME connection show
+  register: current_connections
+
+- name: Delete connections that start with "Wired"
+  shell: nmcli connection delete "{{ item }}"
+  loop: "{{ current_connections.stdout_lines }}"
+  when: "'Wired' in item"
+  ignore_errors: yes
+  become: true
+  become_method: sudo
+
 - name: "Configure Network Interface to use dnsmasq"
   community.general.nmcli:
     conn_name: "{{ item }}"
@@ -123,6 +135,7 @@
     dns4_ignore_auto: true
     state: present      
   with_items:
-    - "{{ ansible_interfaces }}"
+    - "{{ current_connections.stdout_lines }}"
+  when: "'eth' in item"
   become: true
   become_method: sudo
