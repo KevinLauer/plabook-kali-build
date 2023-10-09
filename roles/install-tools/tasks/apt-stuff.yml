@@ -77,6 +77,7 @@
       - nim
       - seclists
       - ncat
+      - dnsmasq
     state: latest
   become: true
   become_method: sudo
@@ -95,3 +96,28 @@
     append: yes
   become: true
   become_method: sudo
+
+- name: "Copy Dnsmasq conf file"
+  copy:
+    src: "files/dnsmasq.conf"
+    dest: "/etc/dnsmasq.conf"
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+  become_method: sudo
+
+- name: "Enable and Start Dnsmasq Service"
+  ansible.builtin.systemd:
+    name: dnsmasq
+    state: started
+    enabled: true
+
+- name: "Configure Network Interface to use dnsmasq"
+  community.general.nmcli:
+    conn_name: "{{ item }}"
+    dns4: 127.0.0.1
+    dns4_ignore_auto: true
+    state: present      
+  with_items:
+    - "{{ ansible_interfaces }}"

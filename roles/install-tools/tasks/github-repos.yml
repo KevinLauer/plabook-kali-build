@@ -7,7 +7,8 @@
     - { repo: "https://github.com/Flangvik/SharpCollection", location: "/opt/SharpCollection" }
     - { repo: "https://github.com/Ridter/noPac", location: "/opt/noPac" }
     - { repo: "https://github.com/cddmp/enum4linux-ng", location: "/opt/enum4linux-ng" }
-    - { repo: "https://github.com/its-a-feature/Mythic", location: "/opt/Mythic"}
+    - { repo: "https://github.com/its-a-feature/Mythic", location: "/opt/Mythic" }
+    - { repo: "https://github.com/Greenwolf/ntlm_theft", location: "/opt/ntlm-theft" }
   become: true
   become_method: sudo
 
@@ -35,9 +36,9 @@
     - { repo: "carlospolop/PEASS-ng",  regex: "winPEASx64.exe", location: "/opt/peas" }
     - { repo: "WithSecureLabs/chainsaw",  regex: "chainsaw_all_", location: "/opt/" }
     - { repo: "obsidianmd/obsidian-releases",  regex: "_amd64.deb", location: "/tmp/" }
-    - { repo: "BishopFox/sliver", regex: "sliver-server_linux", location: "/opt/sliver/"}
-    - { repo: "BishopFox/sliver", regex: "sliver-client_linux", location: "/opt/sliver/"}
-    - { repo: "gophish/gophish", regex: "linux-64bit.zip", location: "/opt/gophish/"}
+    - { repo: "BishopFox/sliver", regex: "sliver-server_linux", location: "/opt/sliver/" }
+    - { repo: "BishopFox/sliver", regex: "sliver-client_linux", location: "/opt/sliver/" }
+    - { repo: "gophish/gophish", regex: "linux-64bit.zip", location: "/opt/gophish/" }
   async: 45
   poll: 0
   become: true
