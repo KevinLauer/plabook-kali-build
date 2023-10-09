@@ -1,0 +1,41 @@
+---
+- name: "Download Havoc Git Repository"
+  git:
+    repo: "https://github.com/HavocFramework/Havoc"
+    dest: "/opt/Havoc"
+    version: "dev"
+    force: true
+  become: true
+  become_method: sudo
+
+- name: "Change Python version in CmakeList"
+  ansible.builtin.lineinfile:
+    path: /opt/Havoc/client/CMakeLists.txt
+    regexp: '^  find_package\(PythonLibs 3 REQUIRED\)$'
+    line: |
+        set(PYTHON_INCLUDE_DIR /root/.pyenv/versions/3.10.13/include/python3.10)
+        set(PYTHON_LIBRARIES /root/.pyenv/versions/3.10.13/lib/libpython3.10.so)
+  become: true
+  become_method: sudo
+
+- name: "Change Python version in CmakeList"
+  ansible.builtin.lineinfile:
+    path: /opt/Havoc/client/CMakeLists.txt
+    regexp: '^    include_directories\( \${PYTHON_INCLUDE_DIRS} \)'
+    line: '    include_directories( /root/.pyenv/versions/3.10.13/include/python3.10 )'
+  become: true
+  become_method: sudo
+
+- name: "Install Havoc Teamserver"
+  make:
+    chdir: /opt/Havoc
+    target: ts-build
+  become: true
+  become_method: sudo
+
+- name: "Install Havoc Client"
+  make:
+    chdir: /opt/Havoc
+    target: client-build 
+  become: true
+  become_method: sudo

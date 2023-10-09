@@ -1,0 +1,29 @@
+---
+- name: "Install Tmux"
+  apt:
+    name: tmux
+    state: present
+  become: true
+  become_method: sudo
+
+- name: "Copying Tmux Config"
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/.tmux.conf"
+    dest: "{{ ansible_env.HOME }}"
+
+- name: "Create .tmux directoy"
+  file:
+    path: "{{ ansible_env.HOME }}/.tmux"
+    state: directory
+
+- name: "Copying ip-addr.sh"
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/ip-addr.sh"
+    dest: "{{ ansible_env.HOME }}/.tmux"
+    mode: '0744'
+
+- name: "Create RemoteIp File"
+  ansible.builtin.copy:
+    dest: "{{ ansible_env.HOME }}/.remoteip"
+    content: "127.0.0.1"
+    mode: "0755"

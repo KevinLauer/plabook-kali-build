@@ -1,0 +1,48 @@
+---
+- name: "Install pipx tools"
+  community.general.pipx:
+    name: "{{ item.name }}"
+    source: "{{ item.url }}"
+    state: latest
+  loop:
+    - { name: 'crackmapexec', url: 'git+https://github.com/byt3bl33d3r/CrackMapExec' }
+    - { name: 'certipy-ad', url: 'git+https://github.com/ly4k/Certipy.git' }
+    - { name: 'bloodhound', url: 'git+https://github.com/dirkjanm/BloodHound.py.git' }
+
+
+- name: "Remove Pyenv if installed"
+  ansible.builtin.file:
+    path: /root/.pyenv/
+    state: absent
+  become: true
+  become_method: sudo
+
+- name: "Install Pyenv for root user"
+  shell:
+    cmd: curl https://pyenv.run | bash
+    chdir: /tmp/
+  become: true
+  become_method: sudo
+
+- name: "Add Pyenv to .zshrc"
+  ansible.builtin.lineinfile:
+    path: /root/.zshrc
+    line: |
+      export PYENV_ROOT="$HOME/.pyenv"
+      command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+      eval "$(pyenv init -)"
+  become: true
+  become_method: sudo
+
+- name: "Source .zshrc"
+  shell:
+    cmd: source /root/.zshrc
+    executable: /usr/bin/zsh
+  become: true
+  become_method: sudo
+
+- name: "Install Python3.10 with Pyenv"
+  shell:
+    cmd: /root/.pyenv/bin/pyenv install 3.10.13
+  become: true
+  become_method: sudo
