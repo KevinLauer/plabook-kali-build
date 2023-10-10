@@ -1,5 +1,5 @@
 ---
-- name: "Install pipx tools"
+- name: "Install pipx tools from source"
   community.general.pipx:
     name: "{{ item.name }}"
     source: "{{ item.url }}"
@@ -8,7 +8,15 @@
     - { name: 'crackmapexec', url: 'git+https://github.com/byt3bl33d3r/CrackMapExec' }
     - { name: 'certipy-ad', url: 'git+https://github.com/ly4k/Certipy.git' }
     - { name: 'bloodhound', url: 'git+https://github.com/dirkjanm/BloodHound.py.git' }
+    - { name: 'donpapi', url: 'git+https://github.com/login-securite/DonPAPI.git' }
 
+- name: "Install pipx tools from name"
+  community.general.pipx:
+    name: "{{ item.name }}"
+    state: latest
+  loop:
+    - { name: 'lsassy' }
+    - { name: 'coercer' }
 
 - name: "Remove Pyenv if installed"
   ansible.builtin.file:
