@@ -1,29 +1,26 @@
 ---
 - name: Updating apt repo/cache
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
     force_apt_get: yes
     cache_valid_time: 3600
   become: true
-  become_method: sudo
 
-- name: "Upgrade all packages"
-  apt:
+- name: Upgrade all packages
+  ansible.builtin.apt:
     upgrade: yes
     force_apt_get: yes
   become: true
-  become_method: sudo
-  
-- name: "Uninstall some Packages"
-  apt:
+
+- name: Uninstall some Packages
+  ansible.builtin.apt:
     name:
       - enum4linux
     state: absent
   become: true
-  become_method: sudo
 
-- name: "Installing Packages"
-  apt:
+- name: Installing Packages
+  ansible.builtin.apt:
     name:
       - jq
       - pip
@@ -81,63 +78,58 @@
       - burpsuite
     state: latest
   become: true
-  become_method: sudo
 
-- name: "Copy Virtualenvwrapper to correct directory"
-  copy:
+- name: Copy Virtualenvwrapper to correct directory
+  ansible.builtin.copy:
     src: "/usr/share/virtualenvwrapper/virtualenvwrapper.sh"
     dest: "/usr/local/bin/virtualenvwrapper.sh"
     mode: "0755"
-  become: yes
+  become: true
 
-- name: "Add User to Docker group"
-  user:
+- name: Add User to Docker group
+  ansible.builtin.user:
     name: "{{ ansible_user_id }}"
     groups: "docker"
     append: yes
   become: true
-  become_method: sudo
 
-- name: "Copy Dnsmasq conf file"
-  copy:
+- name: Copy Dnsmasq conf file
+  ansible.builtin.copy:
     src: "files/dnsmasq.conf"
     dest: "/etc/dnsmasq.conf"
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   become: true
-  become_method: sudo
 
-- name: "Enable and Start Dnsmasq Service"
+- name: Enable and Start Dnsmasq Service
   ansible.builtin.systemd:
     name: dnsmasq
     state: started
-    enabled: true
+    enabled: yes
   become: true
-  become_method: sudo
 
 - name: List current connections
-  shell: nmcli -t -f NAME connection show
+  ansible.builtin.shell: nmcli -t -f NAME connection show
   register: current_connections
+  changed_when: false
 
 - name: Delete connections that start with "Wired"
-  shell: nmcli connection delete "{{ item }}"
+  ansible.builtin.shell: nmcli connection delete "{{ item }}"
   loop: "{{ current_connections.stdout_lines }}"
   when: "'Wired' in item"
-  ignore_errors: yes
+  failed_when: false
   become: true
-  become_method: sudo
 
-- name: "Configure Network Interface to use dnsmasq"
+- name: Configure Network Interface to use dnsmasq
   community.general.nmcli:
     conn_name: "{{ item }}"
     type: ethernet
     dns4: 127.0.0.1
-    dns4_ignore_auto: true
-    state: present      
+    dns4_ignore_auto: yes
+    state: present
   with_items:
     - "{{ ansible_interfaces }}"
   when: "'eth' in item"
-  ignore_errors: yes
+  ignore_errors: true
   become: true
-  become_method: sudo

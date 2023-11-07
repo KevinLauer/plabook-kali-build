@@ -1,6 +1,6 @@
 ---
-- name: "Installing useful github repos"
-  git:
+- name: Installing useful GitHub repos
+  ansible.builtin.git:
     repo: "{{ item.repo }}"
     dest: "{{ item.location }}"
   loop:
@@ -10,56 +10,50 @@
     - { repo: "https://github.com/its-a-feature/Mythic", location: "/opt/Mythic" }
     - { repo: "https://github.com/Greenwolf/ntlm_theft", location: "/opt/ntlm-theft" }
   become: true
-  become_method: sudo
 
 - name: Create temporary build directory
   ansible.builtin.tempfile:
     state: directory
   register: build_dir
 
-- name: "Copying python script to download github releases"
-  copy:
+- name: Copy python script to download GitHub releases
+  ansible.builtin.copy:
     src: "files/githubdownload.py"
     dest: "{{ build_dir.path }}/githubdownload.py"
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
   become: true
-  become_method: sudo
 
-- name: "Downloading github releases"
-  shell: "{{ build_dir.path }}/githubdownload.py {{ item.repo }} {{ item.regex }} {{ item.location }} {% if item.filename is defined %}{{ item.filename }}{% endif %}"
+- name: Download GitHub releases
+  ansible.builtin.shell: "{{ build_dir.path }}/githubdownload.py {{ item.repo }} {{ item.regex }} {{ item.location }} {% if item.filename is defined %}{{ item.filename }}{% endif %}"
   loop:
-    - { repo: "jpillora/chisel",  regex: "_linux_amd64.gz", location: "/opt/chisel" }
-    - { repo: "jpillora/chisel",  regex: "_windows_amd64.gz", location: "/opt/chisel" }
-    - { repo: "carlospolop/PEASS-ng",  regex: "linpeas.sh", location: "/opt/peas" }
-    - { repo: "carlospolop/PEASS-ng",  regex: "winPEASx64.exe", location: "/opt/peas" }
-    - { repo: "WithSecureLabs/chainsaw",  regex: "chainsaw_all_", location: "/opt/" }
-    - { repo: "obsidianmd/obsidian-releases",  regex: "_amd64.deb", location: "/tmp/" }
+    - { repo: "jpillora/chisel", regex: "_linux_amd64.gz", location: "/opt/chisel" }
+    - { repo: "jpillora/chisel", regex: "_windows_amd64.gz", location: "/opt/chisel" }
+    - { repo: "carlospolop/PEASS-ng", regex: "linpeas.sh", location: "/opt/peas" }
+    - { repo: "carlospolop/PEASS-ng", regex: "winPEASx64.exe", location: "/opt/peas" }
+    - { repo: "WithSecureLabs/chainsaw", regex: "chainsaw_all_", location: "/opt/" }
+    - { repo: "obsidianmd/obsidian-releases", regex: "_amd64.deb", location: "/tmp/" }
     - { repo: "BishopFox/sliver", regex: "sliver-server_linux", location: "/opt/sliver/" }
     - { repo: "BishopFox/sliver", regex: "sliver-client_linux", location: "/opt/sliver/" }
     - { repo: "gophish/gophish", regex: "linux-64bit.zip", location: "/opt/gophish/" }
   async: 45
   poll: 0
   become: true
-  become_method: sudo
 
-- name: "Find Obsidian deb package"
+- name: Find Obsidian deb package
   ansible.builtin.find:
-    path: /tmp/
+    paths: /tmp/
     patterns: "^obsidian.*"
     use_regex: yes
   register: obsidianname
 
-- name: "Install Obsidian"
+- name: Install Obsidian
   ansible.builtin.apt:
     deb: "{{ item.path }}"
   loop: "{{ obsidianname.files }}"
-  loop_control:
-    label: "{{ item.path }}"
   when: obsidianname.matched > 0
   become: true
-  become_method: sudo
 
 - name: Remove temporary build directory
   ansible.builtin.file:

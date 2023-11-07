@@ -1,6 +1,6 @@
 ---
-- name: "Installing tools from Gems"
-  gem:
+- name: Installing tools from Gems
+  community.general.gem:
     name: "{{ item }}"
     state: latest
   loop:
@@ -19,5 +19,4 @@
     - winrm-fs
     - evil-winrm
   become: true
-  become_method: sudo
 

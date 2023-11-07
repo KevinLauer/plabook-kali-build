@@ -1,37 +1,33 @@
 ---
-- name: "install Kerbrute"
-  shell: go install github.com/ropnop/kerbrute@master
+- name: Install Kerbrute
+  ansible.builtin.shell: go install github.com/ropnop/kerbrute@master
 
-- name: "Download GO Git Repositories"
-  git:
+- name: Download GO Git Repositories
+  ansible.builtin.git:
     repo: "{{ item.repo }}"
     dest: "{{ item.location }}"
   loop:
     - { repo: "https://github.com/optiv/ScareCrow", location: "/opt/ScareCrow" }
     - { repo: "https://github.com/nicocha30/ligolo-ng", location: "/opt/ligolo-ng" }
   become: true
-  become_method: sudo
 
-- name: "Install ScareCrow"
-  shell:
-    cmd: go build ScareCrow.go
+- name: Install ScareCrow
+  ansible.builtin.shell:
+    cmd: "go build ScareCrow.go"
     chdir: /opt/ScareCrow/
   become: true
-  become_method: sudo
 
-- name: "Install ligolo-ng"
-  shell:
+- name: Install ligolo-ng
+  ansible.builtin.shell:
     cmd: |
       go build -o agent cmd/agent/main.go
       go build -o proxy cmd/proxy/main.go
     chdir: /opt/ligolo-ng
   become: true
-  become_method: sudo
 
-- name: "Setup ligolo-ng"
-  shell:
+- name: Setup ligolo-ng
+  ansible.builtin.shell:
     cmd: |
       ip tuntap add user {{ ansible_user_id }} mode tun ligolo
       ip link set ligolo up
   become: true
-  become_method: sudo

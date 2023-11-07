@@ -1,7 +1,7 @@
 ---
-- include: apt-stuff.yml
-- include: go-tools.yml
-- include: github-repos.yml
-- include: python-tools.yml
-- include: gem-tools.yml
-- include: c2.yml
+- import_tasks: apt-stuff.yml
+- import_tasks: go-tools.yml
+- import_tasks: github-repos.yml
+- import_tasks: python-tools.yml
+- import_tasks: gem-tools.yml
+- import_tasks: c2.yml

@@ -1,32 +1,35 @@
 ---
-- name: "Enable rsyslog service"
-  service:
+- name: Enable rsyslog service
+  ansible.builtin.service:
     name: rsyslog
     enabled: yes
     state: started
-  become: yes
-  become_method: sudo
+  become: true
 
-- name: "Configure UFW"
-  ufw:
+- name: Configure UFW
+  ansible.builtin.ufw:
     state: enabled
     policy: allow
-  become: yes
-  become_method: sudo
+  become: true
 
-- name: "Log SYN packets in INPUT Chain"
-  lineinfile:
+- name: Check if Log SYN packets lines are already in after.rules
+  ansible.builtin.shell:
+    cmd: 'grep -q "-A ufw-after-input -p tcp --syn -j LOG" /etc/ufw/after.rules'
+  register: afterrules_lines_exist
+  changed_when: false
+  failed_when: false
+  become: true
+
+- name: Log SYN packets in INPUT Chain
+  ansible.builtin.lineinfile:
     path: /etc/ufw/after.rules
     line: '-A ufw-after-input -p tcp --syn -j LOG --log-prefix "[UFW-SYN-LOG] "'
     insertbefore: "# don't delete the 'COMMIT' line or these rules won't be processed"
-  become: yes
-  become_method: sudo
-  
-- name: "Restart ufw"
-  service:
+  when: afterrules_lines_exist.rc != 0
+  become: true
+
+- name: Restart ufw
+  ansible.builtin.service:
     name: ufw
     state: restarted
   become: true
-  become_method: sudo
-        
-

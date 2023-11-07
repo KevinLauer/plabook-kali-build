@@ -1,27 +1,27 @@
+---
 - name: "Check if BurpSuiteCA.der exists"
-  stat:
+  ansible.builtin.stat:
     path: /usr/local/share/ca-certificates/BurpSuiteCA.der
   register: burp_cert
   
 - name: "Copying Burp Script"
-  copy:
+  ansible.builtin.copy:
     src: files/getburpcert.sh
     dest: /tmp/getburpcert.sh
-    mode: 0777
+    mode: '0777'
 
 - name: "Executing bash script to Download CA Certificate"
-  shell:
-    /tmp/getburpcert.sh
+  ansible.builtin.shell:
+    cmd: /tmp/getburpcert.sh
 
 - name: "Copying CA Certificate to /usr/local/share/ca-certificates"
-  copy:
+  ansible.builtin.copy:
     src: /tmp/cacert.der
     dest: /usr/local/share/ca-certificates/BurpSuiteCA.der
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
   become: true
-  become_method: sudo
 
 - name: Create directory for Burp Suite extras
   ansible.builtin.file:
@@ -29,7 +29,6 @@
     state: directory
     mode: '0755'
   become: true
-  become_method: sudo
 
 - name: Download jar files
   ansible.builtin.get_url:
@@ -38,11 +37,9 @@
     checksum: "{{ item.value.checksum }}"
     mode: '0644'
   become: true
-  become_method: sudo
   loop: "{{ lookup('dict', burpsuite_extras_jars) }}"
   
 - name: Copy BurpSuite Community Config
-  template:
+  ansible.builtin.template:
     src: "templates/UserConfigCommunity.json.j2"
     dest: "/home/{{ ansible_user_id }}/.BurpSuite/UserConfigCommunity.json"
-

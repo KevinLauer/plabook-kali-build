@@ -1,6 +1,6 @@
 ---
 - name: "Copy ZSHRC"
-  copy:
+  ansible.builtin.copy:
     src: "{{ role_path }}/files/.zshrc"
     dest: "{{ ansible_env.HOME }}"
 

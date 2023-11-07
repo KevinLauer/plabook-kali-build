@@ -2,13 +2,13 @@
 # tasks file for configure-gnome
 
 - name: Install Gnome Shell Extensions dependencies
-  apt:
-    name: 
+  ansible.builtin.apt:
+    name:
       - chrome-gnome-shell
       - gnome-tweaks
       - gnome-shell
     state: present
-  become: yes
+  become: true
 
 - name: Install Gnome-Extensions-CLI via Pipx
   community.general.pipx:
@@ -16,19 +16,19 @@
     state: present
 
 - name: Install Arc Menu
-  command: "{{ ansible_env.HOME }}/.local/bin/gnome-extensions-cli install arcmenu@arcmenu.com"
+  ansible.builtin.shell: "{{ ansible_env.HOME }}/.local/bin/gnome-extensions-cli install arcmenu@arcmenu.com"
 
 - name: Install Dash to Panel
-  command: "{{ ansible_env.HOME }}/.local/bin/gnome-extensions-cli install dash-to-panel@jderose9.github.com"
+  ansible.builtin.shell: "{{ ansible_env.HOME }}/.local/bin/gnome-extensions-cli install dash-to-panel@jderose9.github.com"
 
 - name: Copy Configuration File to tmp
-  copy:
+  ansible.builtin.copy:
     src: "{{ role_path }}/files/dash-to-panel.conf"
     dest: "/tmp/dash-to-panel.conf"
     mode: "0755"
 
 - name: Configure Dash to Panel
-  shell: "dconf load /org/gnome/shell/extensions/dash-to-panel/ < /tmp/dash-to-panel.conf"
+  ansible.builtin.shell: "dconf load /org/gnome/shell/extensions/dash-to-panel/ < /tmp/dash-to-panel.conf"
 
 - name: Disable Dash to Dock
-  command: "{{ ansible_env.HOME }}/.local/bin/gnome-extensions-cli disable dash-to-dock@micxgx.gmail.com"
+  ansible.builtin.shell: "{{ ansible_env.HOME }}/.local/bin/gnome-extensions-cli disable dash-to-dock@micxgx.gmail.com"
