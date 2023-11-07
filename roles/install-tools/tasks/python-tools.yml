@@ -17,6 +17,7 @@
   loop:
     - { name: 'lsassy' }
     - { name: 'coercer' }
+    - { name: 'adidnsdump' }
 
 - name: "Remove Pyenv if installed"
   ansible.builtin.file:
