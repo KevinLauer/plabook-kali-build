@@ -78,6 +78,7 @@
       - seclists
       - ncat
       - dnsmasq
+      - burpsuite
     state: latest
   become: true
   become_method: sudo
