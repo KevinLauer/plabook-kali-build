@@ -70,7 +70,6 @@
       - binutils-mingw-w64
       - g++-mingw-w64
       - gpg
-      - nim
       - seclists
       - ncat
       - burpsuite
