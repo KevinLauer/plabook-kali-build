@@ -29,7 +29,6 @@
       - flameshot
       - exiftool
       - golang
-      - nextcloud-desktop
       - virtualenvwrapper
       - docker.io
       - docker-compose
@@ -74,7 +73,6 @@
       - nim
       - seclists
       - ncat
-      - dnsmasq
       - burpsuite
     state: latest
   become: true
@@ -91,45 +89,4 @@
     name: "{{ ansible_user_id }}"
     groups: "docker"
     append: yes
-  become: true
-
-- name: Copy Dnsmasq conf file
-  ansible.builtin.copy:
-    src: "files/dnsmasq.conf"
-    dest: "/etc/dnsmasq.conf"
-    owner: root
-    group: root
-    mode: "0644"
-  become: true
-
-- name: Enable and Start Dnsmasq Service
-  ansible.builtin.systemd:
-    name: dnsmasq
-    state: started
-    enabled: yes
-  become: true
-
-- name: List current connections
-  ansible.builtin.shell: nmcli -t -f NAME connection show
-  register: current_connections
-  changed_when: false
-
-- name: Delete connections that start with "Wired"
-  ansible.builtin.shell: nmcli connection delete "{{ item }}"
-  loop: "{{ current_connections.stdout_lines }}"
-  when: "'Wired' in item"
-  failed_when: false
-  become: true
-
-- name: Configure Network Interface to use dnsmasq
-  community.general.nmcli:
-    conn_name: "{{ item }}"
-    type: ethernet
-    dns4: 127.0.0.1
-    dns4_ignore_auto: yes
-    state: present
-  with_items:
-    - "{{ ansible_interfaces }}"
-  when: "'eth' in item"
-  ignore_errors: true
   become: true

@@ -8,7 +8,6 @@
     dest: "{{ item.location }}"
   loop:
     - { repo: "https://github.com/optiv/ScareCrow", location: "/opt/ScareCrow" }
-    - { repo: "https://github.com/nicocha30/ligolo-ng", location: "/opt/ligolo-ng" }
   become: true
 
 - name: Install ScareCrow
